@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import {
   View,
@@ -23,7 +23,7 @@ import SectionCard from "../components/SectionCard";
 import SearchBar from "../components/SearchBar";
 
 import { COLORS, SPACING } from "../constants/theme";
-
+import { ThemeContext } from "../context/ThemeContext";
 import { nutritionGoals, tabs } from "../data/mockData";
 
 import { fetchMeals } from "../api/api";
@@ -46,6 +46,14 @@ export default function HomeScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState("");
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  const backgroundColor =
+    theme === "light" ? COLORS.background : COLORS.darkBackground;
+
+  const textColor = theme === "light" ? COLORS.text : COLORS.darkText;
+
+  const surfaceColor = theme === "light" ? COLORS.surface : COLORS.darkSurface;
 
   const handleGoalPress = (goalId) => {
     setCurrentGoals((prev) =>
@@ -88,7 +96,14 @@ export default function HomeScreen({ navigation }) {
 
   if (loading) {
     return (
-      <View style={styles.loaderContainer}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor,
+          },
+        ]}
+      >
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
@@ -102,181 +117,289 @@ export default function HomeScreen({ navigation }) {
     );
   }
 
-  return (
-    <View style={styles.container}>
-      <AppStatusBar />
+ return (
+<View
+style={[
+styles.container,
+{
+backgroundColor,
+},
+]}
 
-      <ScreenHeader subtitle="AI Nutrition Planner" title="Smart Grocery" />
+>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+<AppStatusBar
+backgroundColor={backgroundColor}
+barStyle={theme === "light" ? "dark-content" : "light-content"}
+/>
+<ScreenHeader
+  subtitle="AI Nutrition Planner"
+  title="Smart Grocery"
+/>
+
+<ScrollView
+  contentContainerStyle={styles.scrollContent}
+  showsVerticalScrollIndicator={false}
+>
+  <SearchBar
+    value={search}
+    onChangeText={setSearch}
+  />
+
+  <TouchableOpacity
+    onPress={toggleTheme}
+    style={styles.themeButton}
+  >
+    <Text style={styles.themeButtonText}>
+      {theme === "light"
+        ? "🌙 Dark Mode"
+        : "☀️ Light Mode"}
+    </Text>
+  </TouchableOpacity>
+
+  <View style={styles.topSection}>
+    <SectionCard title="Basic Info">
+      <View
+        style={[
+          styles.inputWrapper,
+          {
+            backgroundColor: surfaceColor,
+          },
+        ]}
       >
-        <SearchBar value={search} onChangeText={setSearch} />
+        <Feather
+          name="dollar-sign"
+          size={24}
+          color={COLORS.textMuted}
+          style={styles.inputIcon}
+        />
 
-        <View style={styles.topSection}>
-          <SectionCard title="Basic Info">
-            <View style={styles.inputWrapper}>
-              <Feather
-                name="dollar-sign"
-                size={24}
-                color={COLORS.textMuted}
-                style={styles.inputIcon}
-              />
+        <TextInput
+          placeholder="Budget (€)"
+          placeholderTextColor={COLORS.textMuted}
+          value={budget}
+          onChangeText={setBudget}
+          style={[
+            styles.input,
+            {
+              color: textColor,
 
-              <TextInput
-                placeholder="Budget (€)"
-                placeholderTextColor={COLORS.textMuted}
-                value={budget}
-                onChangeText={setBudget}
-                style={styles.input}
-                keyboardType="numeric"
-              />
-            </View>
+              backgroundColor: surfaceColor,
+            },
+          ]}
+          keyboardType="numeric"
+        />
+      </View>
 
-            <View style={styles.row}>
-              <View style={[styles.inputWrapper, styles.half]}>
-                <Ionicons
-                  name="people-outline"
-                  size={22}
-                  color={COLORS.textMuted}
-                  style={styles.inputIcon}
-                />
+      <View style={styles.row}>
+        <View
+          style={[
+            styles.inputWrapper,
+            styles.half,
+            {
+              backgroundColor: surfaceColor,
+            },
+          ]}
+        >
+          <Ionicons
+            name="people-outline"
+            size={22}
+            color={COLORS.textMuted}
+            style={styles.inputIcon}
+          />
 
-                <TextInput
-                  placeholder="People"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={people}
-                  onChangeText={setPeople}
-                  style={styles.input}
-                  keyboardType="numeric"
-                />
-              </View>
+          <TextInput
+            placeholder="People"
+            placeholderTextColor={COLORS.textMuted}
+            value={people}
+            onChangeText={setPeople}
+            style={[
+              styles.input,
+              {
+                color: textColor,
 
-              <View style={[styles.inputWrapper, styles.half]}>
-                <Ionicons
-                  name="calendar-outline"
-                  size={22}
-                  color={COLORS.textMuted}
-                  style={styles.inputIcon}
-                />
-
-                <TextInput
-                  placeholder="Days"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={days}
-                  onChangeText={setDays}
-                  style={styles.input}
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-          </SectionCard>
-
-          <SectionCard title="Nutrition Goal">
-            <View style={styles.goalGrid}>
-              {(currentGoals || []).map((goal) => (
-                <GoalOption
-                  key={goal.id}
-                  active={goal.active}
-                  label={goal.label}
-                  onPress={() => handleGoalPress(goal.id)}
-                />
-              ))}
-            </View>
-
-            <View style={styles.inputWrapper}>
-              <Ionicons
-                name="flame-outline"
-                size={22}
-                color={COLORS.textMuted}
-                style={styles.inputIcon}
-              />
-
-              <TextInput
-                placeholder="Calories per day"
-                placeholderTextColor={COLORS.textMuted}
-                value={calories}
-                onChangeText={setCalories}
-                style={styles.input}
-                keyboardType="numeric"
-              />
-            </View>
-          </SectionCard>
-
-          <SectionCard title="Popular Meals">
-            <FlatList
-              data={meals}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item.idMeal}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.mealCard}
-                  onPress={() =>
-                    navigation.navigate("mealDetails", {
-                      meal: item,
-                    })
-                  }
-                >
-                  <Image
-                    source={{
-                      uri: item.strMealThumb,
-                    }}
-                    style={styles.mealImage}
-                  />
-
-                  <Text style={styles.mealTitle}>{item.strMeal}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </SectionCard>
+                backgroundColor: surfaceColor,
+              },
+            ]}
+            keyboardType="numeric"
+          />
         </View>
 
-        <View style={styles.bottomSection}>
-          <PrimaryButton title="✨ Generate Plan" onPress={handleGenerate} />
+        <View
+          style={[
+            styles.inputWrapper,
+            styles.half,
+            {
+              backgroundColor: surfaceColor,
+            },
+          ]}
+        >
+          <Ionicons
+            name="calendar-outline"
+            size={22}
+            color={COLORS.textMuted}
+            style={styles.inputIcon}
+          />
 
-          <View style={styles.privacyRow}>
-            <Ionicons
-              name="lock-closed-outline"
-              size={16}
-              color={COLORS.textMuted}
+          <TextInput
+            placeholder="Days"
+            placeholderTextColor={COLORS.textMuted}
+            value={days}
+            onChangeText={setDays}
+            style={[
+              styles.input,
+              {
+                color: textColor,
+
+                backgroundColor: surfaceColor,
+              },
+            ]}
+            keyboardType="numeric"
+          />
+        </View>
+      </View>
+    </SectionCard>
+
+    <SectionCard title="Nutrition Goal">
+      <View style={styles.goalGrid}>
+        {(currentGoals || []).map((goal) => (
+          <GoalOption
+            key={goal.id}
+            active={goal.active}
+            label={goal.label}
+            onPress={() =>
+              handleGoalPress(goal.id)
+            }
+          />
+        ))}
+      </View>
+
+      <View
+        style={[
+          styles.inputWrapper,
+          {
+            backgroundColor: surfaceColor,
+          },
+        ]}
+      >
+        <Ionicons
+          name="flame-outline"
+          size={22}
+          color={COLORS.textMuted}
+          style={styles.inputIcon}
+        />
+
+        <TextInput
+          placeholder="Calories per day"
+          placeholderTextColor={COLORS.textMuted}
+          value={calories}
+          onChangeText={setCalories}
+          style={[
+            styles.input,
+            {
+              color: textColor,
+
+              backgroundColor: surfaceColor,
+            },
+          ]}
+          keyboardType="numeric"
+        />
+      </View>
+    </SectionCard>
+
+    <SectionCard title="Popular Meals">
+      <FlatList
+        data={meals}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.idMeal}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.mealCard}
+            onPress={() =>
+              navigation.navigate(
+                "mealDetails",
+                {
+                  meal: item,
+                },
+              )
+            }
+          >
+            <Image
+              source={{
+                uri: item.strMealThumb,
+              }}
+              style={styles.mealImage}
             />
 
-            <Text style={styles.privacyText}>
-              Your plan is 100% personalized and private
+            <Text
+              style={[
+                styles.mealTitle,
+                {
+                  color: textColor,
+                },
+              ]}
+            >
+              {item.strMeal}
             </Text>
-          </View>
-        </View>
-      </ScrollView>
-
-      <BottomTabBar
-        activeTab="home"
-        onTabPress={(tab) => {
-          if (tab === "home") {
-            navigation.navigate("home");
-          }
-
-          if (tab === "shopping") {
-            navigation.navigate("shopping");
-          }
-
-          if (tab === "history") {
-            navigation.navigate("history");
-          }
-
-          if (tab === "meal") {
-            navigation.navigate("meal");
-          }
-
-          if (tab === "summary") {
-            navigation.navigate("summary");
-          }
-        }}
-        tabs={tabs}
+          </TouchableOpacity>
+        )}
       />
+    </SectionCard>
+  </View>
+
+  <View style={styles.bottomSection}>
+    <PrimaryButton
+      title="✨ Generate Plan"
+      onPress={handleGenerate}
+    />
+
+    <View style={styles.privacyRow}>
+      <Ionicons
+        name="lock-closed-outline"
+        size={16}
+        color={COLORS.textMuted}
+      />
+
+      <Text style={styles.privacyText}>
+        Your plan is 100% personalized and
+        private
+      </Text>
     </View>
-  );
+  </View>
+</ScrollView>
+
+<BottomTabBar
+  activeTab="home"
+  onTabPress={(tab) => {
+    if (tab === "home") {
+      navigation.navigate("home");
+    }
+
+    if (tab === "shopping") {
+      navigation.navigate("shopping");
+    }
+
+    if (tab === "history") {
+      navigation.navigate("history");
+    }
+
+    if (tab === "meal") {
+      navigation.navigate("meal");
+    }
+
+    if (tab === "summary") {
+      navigation.navigate("summary");
+    }
+  }}
+  tabs={tabs}
+/>
+```
+
+  </View>
+);
+
+  
 }
 
 const styles = StyleSheet.create({
@@ -423,5 +546,24 @@ const styles = StyleSheet.create({
     fontWeight: "600",
 
     color: COLORS.text,
+  },
+  themeButton: {
+    backgroundColor: COLORS.primary,
+
+    paddingVertical: 14,
+
+    borderRadius: 18,
+
+    alignItems: "center",
+
+    marginBottom: 18,
+  },
+
+  themeButtonText: {
+    color: COLORS.white,
+
+    fontSize: 16,
+
+    fontWeight: "700",
   },
 });

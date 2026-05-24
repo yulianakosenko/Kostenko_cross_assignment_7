@@ -1,4 +1,14 @@
 export const COLORS = {
+  darkBackground: "#0F172A",
+
+  darkSurface: "#111827",
+
+  darkInput: "#1E293B",
+
+  darkBorder: "#334155",
+
+  darkText: "#F8FAFC",
+
   background: "#F3F6F4",
 
   surface: "#FFFFFF",

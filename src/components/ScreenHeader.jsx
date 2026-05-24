@@ -1,49 +1,89 @@
-import { Platform, View, Text, StyleSheet } from "react-native";
+import React, { useContext } from "react";
+
+import {
+Platform,
+View,
+Text,
+StyleSheet,
+} from "react-native";
 
 import { COLORS } from "../constants/theme";
 
-export default function ScreenHeader({ title, subtitle }) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.subtitle}>{subtitle}</Text>
+import { ThemeContext } from "../context/ThemeContext";
 
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
+export default function ScreenHeader({
+title,
+subtitle,
+}) {
+const { theme } = useContext(ThemeContext);
+
+const titleColor =
+theme === "light"
+? "#07162E"
+: COLORS.darkText;
+
+const subtitleColor =
+theme === "light"
+? COLORS.textMuted
+: "#94A3B8";
+
+return ( <View style={styles.container}>
+<Text
+style={[
+styles.subtitle,
+{
+color: subtitleColor,
+},
+]}
+>
+{subtitle} </Text>
+
+  <Text
+    style={[
+      styles.title,
+      {
+        color: titleColor,
+      },
+    ]}
+  >
+    {title}
+  </Text>
+</View>
+
+);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // iOS and Android spacing adjustments
-    paddingTop: Platform.select({
-      ios: 20,
-      android: 10,
-    }),
+container: {
+paddingTop: Platform.select({
+ios: 20,
+android: 10,
+}),
 
-    paddingHorizontal: 24,
+paddingHorizontal: 24,
 
-    paddingBottom: 18,
-  },
+paddingBottom: 18,
 
-  subtitle: {
-    fontSize: 15,
+},
 
-    color: COLORS.textMuted,
+subtitle: {
+fontSize: 15,
 
-    marginBottom: 8,
+marginBottom: 8,
 
-    fontWeight: "500",
-  },
+fontWeight: "500",
 
-  title: {
-    fontSize: 34,
+},
 
-    lineHeight: 38,
+title: {
+fontSize: 34,
 
-    fontWeight: "800",
+lineHeight: 38,
 
-    letterSpacing: -1.5,
+fontWeight: "800",
 
-    color: "#07162E",
-  },
+letterSpacing: -1.5,
+
+
+},
 });

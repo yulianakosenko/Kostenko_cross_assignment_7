@@ -1,102 +1,128 @@
+import React, { useContext } from "react";
+
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
+TouchableOpacity,
+Text,
+StyleSheet,
 } from "react-native";
 
-import {
-  COLORS,
-} from "../constants/theme";
+import { COLORS } from "../constants/theme";
+
+import { ThemeContext } from "../context/ThemeContext";
 
 export default function GoalOption({
-  label,
-  active,
-  onPress,
+label,
+active,
+onPress,
 }) {
-  return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      onPress={onPress}
-      style={[
-        styles.container,
+const { theme } = useContext(ThemeContext);
 
-        active &&
-          styles.activeContainer,
-      ]}
-    >
+const backgroundColor =
+theme === "light"
+? COLORS.surface
+: COLORS.darkSurface;
 
-      <Text
-        style={[
-          styles.label,
+const borderColor =
+theme === "light"
+? "rgba(0,0,0,0.05)"
+: "#334155";
 
-          active &&
-            styles.activeLabel,
-        ]}
-      >
-        {label}
-      </Text>
+const textColor =
+theme === "light"
+? COLORS.textMuted
+: COLORS.darkText;
 
-    </TouchableOpacity>
-  );
+const activeBackground =
+theme === "light"
+? "#E7F5EC"
+: "#1E293B";
+
+return (
+<TouchableOpacity
+activeOpacity={0.9}
+onPress={onPress}
+style={[
+styles.container,
+
+
+    {
+      backgroundColor,
+
+      borderColor,
+    },
+
+    active && {
+      backgroundColor:
+        activeBackground,
+
+      borderColor:
+        COLORS.primary,
+    },
+  ]}
+>
+  <Text
+    style={[
+      styles.label,
+
+      {
+        color: textColor,
+      },
+
+      active &&
+        styles.activeLabel,
+    ]}
+  >
+    {label}
+  </Text>
+</TouchableOpacity>
+
+
+);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    minWidth: 116,
+container: {
+minWidth: 116,
 
-    height: 62,
 
-    paddingHorizontal: 24,
+height: 62,
 
-    borderRadius: 24,
+paddingHorizontal: 24,
 
-    justifyContent: "center",
+borderRadius: 24,
 
-    alignItems: "center",
+justifyContent: "center",
 
-    backgroundColor:
-      COLORS.surface,
+alignItems: "center",
 
-    borderWidth: 1,
+borderWidth: 1,
 
-    borderColor:
-      "rgba(0,0,0,0.05)",
+shadowColor: "#000",
 
-    shadowColor: "#000",
+shadowOffset: {
+  width: 0,
+  height: 6,
+},
 
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
+shadowOpacity: 0.03,
 
-    shadowOpacity: 0.03,
+shadowRadius: 14,
 
-    shadowRadius: 14,
+elevation: 3,
 
-    elevation: 3,
-  },
 
-  activeContainer: {
-    backgroundColor:
-      "#E7F5EC",
+},
 
-    borderColor:
-      "#BEE7CC",
-  },
+label: {
+fontSize: 17,
 
-  label: {
-    fontSize: 17,
+fontWeight: "600",
 
-    fontWeight: "600",
+},
 
-    color:
-      COLORS.textMuted,
-  },
+activeLabel: {
+color: COLORS.primary,
+fontWeight: "700",
 
-  activeLabel: {
-    color:
-      COLORS.primaryDark,
-
-    fontWeight: "700",
-  },
+},
 });

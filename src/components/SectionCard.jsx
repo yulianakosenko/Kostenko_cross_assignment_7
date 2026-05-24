@@ -1,11 +1,37 @@
+import React, { useContext } from "react";
+
 import { StyleSheet, Text, View } from "react-native";
 
 import { COLORS, RADII, SHADOW, SPACING, TYPOGRAPHY } from "../constants/theme";
 
+import { ThemeContext } from "../context/ThemeContext";
+
 export default function SectionCard({ title, children }) {
+  const { theme } = useContext(ThemeContext);
+
+  const surfaceColor = theme === "light" ? COLORS.surface : COLORS.darkSurface;
+
+  const textColor = theme === "light" ? COLORS.primary : COLORS.darkText;
+
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: surfaceColor,
+        },
+      ]}
+    >
+      <Text
+        style={[
+          styles.title,
+          {
+            color: textColor,
+          },
+        ]}
+      >
+        {title}
+      </Text>
 
       <View style={styles.content}>{children}</View>
     </View>
@@ -14,8 +40,6 @@ export default function SectionCard({ title, children }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.surface,
-
     borderRadius: RADII.lg,
 
     padding: SPACING.md,
@@ -24,8 +48,6 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: COLORS.primary,
-
     fontSize: TYPOGRAPHY.caption,
 
     fontWeight: "700",
