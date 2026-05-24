@@ -1,6 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { View, Text, TextInput, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+  FlatList,
+  ActivityIndicator,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 
 import { Feather, Ionicons } from "@expo/vector-icons";
 
@@ -16,6 +26,8 @@ import { COLORS, SPACING } from "../constants/theme";
 
 import { nutritionGoals, tabs } from "../data/mockData";
 
+import { fetchMeals } from "../api/api";
+
 export default function HomeScreen({ navigation }) {
   const [search, setSearch] = useState("");
 
@@ -28,6 +40,12 @@ export default function HomeScreen({ navigation }) {
   const [calories, setCalories] = useState("");
 
   const [currentGoals, setCurrentGoals] = useState(nutritionGoals || []);
+
+  const [meals, setMeals] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
 
   const handleGoalPress = (goalId) => {
     setCurrentGoals((prev) =>
@@ -49,6 +67,40 @@ export default function HomeScreen({ navigation }) {
       goal: selectedGoal,
     });
   };
+
+  useEffect(() => {
+    const loadMeals = async () => {
+      try {
+        setLoading(true);
+
+        const data = await fetchMeals();
+
+        setMeals(data);
+      } catch (err) {
+        setError("Failed to load meals");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMeals();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.loaderContainer}>
+        <Text>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -150,6 +202,34 @@ export default function HomeScreen({ navigation }) {
                 keyboardType="numeric"
               />
             </View>
+          </SectionCard>
+
+          <SectionCard title="Popular Meals">
+            <FlatList
+              data={meals}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.idMeal}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.mealCard}
+                  onPress={() =>
+                    navigation.navigate("mealDetails", {
+                      meal: item,
+                    })
+                  }
+                >
+                  <Image
+                    source={{
+                      uri: item.strMealThumb,
+                    }}
+                    style={styles.mealImage}
+                  />
+
+                  <Text style={styles.mealTitle}>{item.strMeal}</Text>
+                </TouchableOpacity>
+              )}
+            />
           </SectionCard>
         </View>
 
@@ -311,5 +391,37 @@ const styles = StyleSheet.create({
     fontSize: 14,
 
     fontWeight: "500",
+  },
+
+  loaderContainer: {
+    flex: 1,
+
+    justifyContent: "center",
+
+    alignItems: "center",
+  },
+
+  mealCard: {
+    width: 220,
+
+    marginRight: 16,
+  },
+
+  mealImage: {
+    width: "100%",
+
+    height: 140,
+
+    borderRadius: 18,
+  },
+
+  mealTitle: {
+    marginTop: 10,
+
+    fontSize: 16,
+
+    fontWeight: "600",
+
+    color: COLORS.text,
   },
 });

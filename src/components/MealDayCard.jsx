@@ -1,7 +1,5 @@
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 
-import { LinearGradient } from "expo-linear-gradient";
-
 import { COLORS, SHADOW } from "../constants/theme";
 
 const { width } = Dimensions.get("window");
@@ -21,29 +19,20 @@ export default function MealDayCard({ meals, title }) {
 
       {meals.map((meal, index) => (
         <View key={index} style={styles.card}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{
-                uri:
-                  mealImages[meal.type] ||
-                  "https://images.unsplash.com/photo-1490645935967-10de6ba17061",
-              }}
-              style={styles.image}
-            />
-
-            <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.45)"]}
-              style={styles.overlay}
-            />
-
-            <View style={styles.imageContent}>
-              <Text style={styles.imageType}>{meal.type}</Text>
-
-              <Text style={styles.imageTitle}>{meal.name}</Text>
-            </View>
-          </View>
+          <Image
+            source={{
+              uri:
+                mealImages[meal.type] ||
+                "https://images.unsplash.com/photo-1490645935967-10de6ba17061",
+            }}
+            style={styles.image}
+          />
 
           <View style={styles.content}>
+            <Text style={styles.imageType}>{meal.type}</Text>
+
+            <Text style={styles.imageTitle}>{meal.name}</Text>
+
             <View style={styles.infoRow}>
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{meal.kcal} kcal</Text>
@@ -60,7 +49,7 @@ export default function MealDayCard({ meals, title }) {
 
 const styles = StyleSheet.create({
   dayContainer: {
-    marginBottom: 32,
+    marginBottom: 28,
   },
 
   dayTitle: {
@@ -74,69 +63,57 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    // Dynamic width for responsive layout
-    width: width - 40,
+    flexDirection: "row",
+
+    alignItems: "center",
 
     backgroundColor: COLORS.surface,
 
-    borderRadius: 32,
+    borderRadius: 28,
 
-    overflow: "hidden",
+    marginBottom: 16,
 
-    marginBottom: 22,
+    padding: 14,
 
     ...SHADOW,
   },
 
-  imageContainer: {
-    position: "relative",
-  },
-
   image: {
-    width: "100%",
-    height: 240,
-  },
+    width: 92,
 
-  overlay: {
-    position: "absolute",
+    height: 92,
 
-    left: 0,
-    right: 0,
-    bottom: 0,
-
-    height: 140,
-  },
-
-  imageContent: {
-    position: "absolute",
-
-    left: 22,
-    right: 22,
-    bottom: 22,
-  },
-
-  imageType: {
-    color: "#DDF7E7",
-
-    fontSize: 13,
-
-    fontWeight: "700",
-
-    marginBottom: 8,
-  },
-
-  imageTitle: {
-    color: COLORS.white,
-
-    fontSize: 26,
-
-    lineHeight: 32,
-
-    fontWeight: "700",
+    borderRadius: 22,
   },
 
   content: {
-    padding: 22,
+    flex: 1,
+
+    justifyContent: "center",
+
+    marginLeft: 16,
+  },
+
+  imageType: {
+    color: COLORS.primaryDark,
+
+    fontSize: 12,
+
+    fontWeight: "700",
+
+    marginBottom: 6,
+  },
+
+  imageTitle: {
+    color: COLORS.text,
+
+    fontSize: 18,
+
+    lineHeight: 24,
+
+    fontWeight: "700",
+
+    marginBottom: 14,
   },
 
   infoRow: {
@@ -152,20 +129,21 @@ const styles = StyleSheet.create({
 
     borderRadius: 999,
 
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+
+    paddingVertical: 8,
   },
 
   badgeText: {
     color: COLORS.primaryDark,
 
-    fontSize: 13,
+    fontSize: 12,
 
     fontWeight: "700",
   },
 
   grams: {
-    fontSize: 15,
+    fontSize: 14,
 
     color: COLORS.textMuted,
 

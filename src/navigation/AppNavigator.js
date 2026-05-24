@@ -3,12 +3,14 @@ import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ProcessingScreen from "../screens/ProcessingScreen";
+
 import HomeScreen from "../screens/HomeScreen";
+import ProcessingScreen from "../screens/ProcessingScreen";
 import SummaryScreen from "../screens/SummaryScreen";
 import ShoppingScreen from "../screens/ShoppingScreen";
 import HistoryScreen from "../screens/HistoryScreen";
 import MealPlanScreen from "../screens/MealPlanScreen";
+import MealDetailsScreen from "../screens/MealDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +39,7 @@ export default function AppNavigator() {
             title: "AI Meal Planner",
           }}
         />
+
         <Stack.Screen
           name="processing"
           component={ProcessingScreen}
@@ -74,6 +77,14 @@ export default function AppNavigator() {
           component={MealPlanScreen}
           options={{
             title: "Meal Plan",
+          }}
+        />
+
+        <Stack.Screen
+          name="mealDetails"
+          component={MealDetailsScreen}
+          options={{
+            title: "Meal Details",
           }}
         />
       </Stack.Navigator>

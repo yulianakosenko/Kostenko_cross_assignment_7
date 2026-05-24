@@ -13,17 +13,15 @@ import { COLORS, SPACING } from "../constants/theme";
 import { mealDays, tabs } from "../data/mockData";
 
 export default function MealPlanScreen({ navigation, route }) {
-  const historyItem = route?.params?.historyItem;
+  const currentCalories = route?.params?.calories || "1980";
 
-  const currentCalories = historyItem?.calories || "1980";
-
-  const currentDays = historyItem?.days || "7";
+  const currentDays = route?.params?.days || "7";
 
   return (
     <View style={styles.container}>
       <AppStatusBar />
 
-      <ScreenHeader title="Meal Plan" />
+      <ScreenHeader subtitle="AI Generated Nutrition" title="Your Meal Plan" />
 
       <FlatList
         data={mealDays}
@@ -31,19 +29,41 @@ export default function MealPlanScreen({ navigation, route }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
-          <View style={styles.noticeStrip}>
-            <Text style={styles.noticeText}>
-              Balanced meals for {currentDays} days with approximately{" "}
-              {currentCalories} kcal per day
-            </Text>
-          </View>
+          <>
+            <View style={styles.metricsRow}>
+              <View style={styles.metricCard}>
+                <Text style={styles.metricValue}>{currentDays}</Text>
+
+                <Text style={styles.metricLabel}>Days</Text>
+              </View>
+
+              <View style={styles.metricCard}>
+                <Text style={styles.metricValue}>{currentCalories}</Text>
+
+                <Text style={styles.metricLabel}>kcal</Text>
+              </View>
+
+              <View style={styles.metricCard}>
+                <Text style={styles.metricValue}>3</Text>
+
+                <Text style={styles.metricLabel}>Meals</Text>
+              </View>
+            </View>
+
+            <View style={styles.noticeCard}>
+              <Text style={styles.noticeText}>
+                Personalized balanced meal plan optimized for your nutrition
+                goals
+              </Text>
+            </View>
+          </>
         }
         renderItem={({ item }) => (
           <MealDayCard meals={item.meals} title={item.title} />
         )}
       />
 
-      <View style={styles.buttonSection}>
+      <View style={styles.buttonWrapper}>
         <PrimaryButton
           title="Generate Shopping List"
           onPress={() => navigation.navigate("shopping")}
@@ -66,7 +86,10 @@ export default function MealPlanScreen({ navigation, route }) {
           }
 
           if (tab === "meal") {
-            navigation.navigate("meal");
+            navigation.navigate("meal", {
+              calories: currentCalories,
+              days: currentDays,
+            });
           }
 
           if (tab === "summary") {
@@ -83,31 +106,76 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
 
-    width: "100%",
-
     backgroundColor: COLORS.background,
   },
 
   listContent: {
     paddingHorizontal: SPACING.md,
 
-    paddingTop: SPACING.sm,
+    paddingTop: 8,
 
-    paddingBottom: 240,
-
-    backgroundColor: COLORS.background,
+    paddingBottom: 220,
   },
 
-  noticeStrip: {
+  metricsRow: {
+    flexDirection: "row",
+
+    gap: 12,
+
+    marginBottom: 18,
+  },
+
+  metricCard: {
+    flex: 1,
+
+    backgroundColor: COLORS.surface,
+
+    borderRadius: 24,
+
+    paddingVertical: 18,
+
+    alignItems: "center",
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+
+    shadowOpacity: 0.04,
+
+    shadowRadius: 12,
+
+    elevation: 3,
+  },
+
+  metricValue: {
+    fontSize: 22,
+
+    fontWeight: "700",
+
+    color: COLORS.text,
+
+    marginBottom: 4,
+  },
+
+  metricLabel: {
+    fontSize: 13,
+
+    color: COLORS.textMuted,
+
+    fontWeight: "600",
+  },
+
+  noticeCard: {
     backgroundColor: COLORS.primarySoft,
 
-    borderRadius: 22,
+    borderRadius: 24,
 
-    paddingVertical: SPACING.md,
+    padding: 18,
 
-    paddingHorizontal: SPACING.md,
-
-    marginBottom: SPACING.md,
+    marginBottom: 22,
   },
 
   noticeText: {
@@ -120,17 +188,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  buttonSection: {
+  buttonWrapper: {
     position: "absolute",
 
-    left: 0,
+    left: 16,
 
-    right: 0,
+    right: 16,
 
     bottom: 92,
-
-    paddingHorizontal: SPACING.md,
-
-    backgroundColor: "transparent",
   },
 });
